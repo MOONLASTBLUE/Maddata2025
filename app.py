@@ -204,6 +204,7 @@ elif page == "Make Prediction":
     @st.cache_resource
     def train_model():
         df = pd.read_csv("merged_dataset2.csv")
+        df = df[(df["Age"] >= 10) & (df["Age"] < 40)]
         
 #         # 'Weight', 'Height','FAF', 'FCVC', 'TUE', 'FAVC', 'NCP', 'SMOKE', 'MTRANS'
 #         df["Age_Group"] = df["Age"].apply(age_group)
@@ -218,8 +219,8 @@ elif page == "Make Prediction":
 #         X_train = scaler.fit_transform(X_train)
 #         X_test = scaler.transform(X_test)
 
-        # Age_Group column and Calculated_BMI column added
-        df["Age_Group"] = df["Age"].apply(age_group)
+        # update to 10s~30s
+        df["Age_Group"] = df["Age"].apply(lambda x: "10s" if x < 30 else "30s")
         df["Calculated_BMI"] = df["Weight"] / (df["Height"] / 100) ** 2
 
         X = df[['Weight', 'Height', 'FAF', 'FCVC', 'TUE']]
@@ -259,7 +260,7 @@ elif page == "Make Prediction":
     with col3:
         gender = st.selectbox("Gender:", ["Male", "Female"], key="gender_select")
     with col4:
-        age = st.slider("Age:", min_value=0, max_value=100, value=30, key="age_slider")
+        age = st.slider("Age:", min_value=10, max_value=39, value=30, key="age_slider")
 
     # Calculate current BMI and print with color reflected
     current_bmi = weight / ((height / 100) ** 2)
