@@ -3,15 +3,17 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.neural_network import MLPRegressor
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import IsolationForest
 
 # Set page titles and navigation
 st.sidebar.title("Menu")
 page = st.sidebar.radio(
     "Navigate", 
-    ["How to Use the App", "About Obesity", "Make Prediction", "Learn More about Obesity", "About Project"]
+    ["How to Use the App", "About Obesity", "Make Prediction", "Learn More about Obesity", "Predict Sleep Quality" ,"About Project"]
 )
 
 # Page 1: Home & How to Use the App
@@ -446,7 +448,133 @@ elif page == "Learn More about Obesity":
     """)
 
 
+
+
+
+
 # Page 5: About Project
+elif page == "Predict Sleep Quality":
+    st.title("🛌 Predict Your Sleep Quality")
+    st.write("Adjust your lifestyle inputs to see how they affect your sleep quality.")
+    
+    # sleep data load
+    @st.cache_data
+    def load_sleep_data():
+        df = pd.read_csv("Sleep_health_and_lifestyle_dataset.csv")
+    
+        # 수축기/이완기 혈압 분리
+        df[['Systolic_BP', 'Diastolic_BP']] = df['Blood Pressure'].str.split('/', expand=True)
+        df['Systolic_BP'] = pd.to_numeric(df['Systolic_BP'], errors='coerce')
+        df['Diastolic_BP'] = pd.to_numeric(df['Diastolic_BP'], errors='coerce')
+        df.drop(columns=['Blood Pressure'], inplace=True)
+    
+        # 스케일링할 수치형 변수
+        numeric_cols = ['Sleep Duration', 'Physical Activity Level',
+                        'Stress Level', 'Systolic_BP', 'Diastolic_BP', 'Heart Rate', 'Daily Steps']
+        
+        # 결측치 처리
+        df[numeric_cols] = df[numeric_cols].fillna(df[numeric_cols].mean())
+    
+        # 표준화
+        scaler = StandardScaler()
+        df[numeric_cols] = scaler.fit_transform(df[numeric_cols])
+    
+        # 이상치 탐지
+        iso_forest = IsolationForest(contamination=0.05, random_state=42)
+        df["Anomaly"] = iso_forest.fit_predict(df[numeric_cols])
+    
+        # 수면 장애 라벨 인코딩
+        df['Sleep Disorder'] = df['Sleep Disorder'].fillna('No Disorder')
+        encoder = LabelEncoder()
+        df['Sleep Disorder Encoded'] = encoder.fit_transform(df['Sleep Disorder'])
+    
+        # KNN 모델 학습
+        knn = KNeighborsClassifier(n_neighbors=5)
+        knn.fit(df[numeric_cols], df['Sleep Disorder Encoded'])
+        df["Similar_User_Group"] = knn.predict(df[numeric_cols])
+    
+        return df, scaler
+        
+    df, sleep_scaler = load_sleep_data()
+    print(df.head()) 
+
+        # sleep MLP Regressor model
+    @st.cache_resource
+    def train_sleep_model():
+        X = df[['Sleep Duration', 'Physical Activity Level', 'Stress Level', 'Systolic_BP', 'Diastolic_BP', 'Heart Rate', 'Daily Steps']]
+        y = df["Quality of Sleep"]
+    
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    
+        mlp = MLPRegressor(hidden_layer_sizes=(64, 32), activation='relu', max_iter=500, random_state=42)
+        mlp.fit(X_train, y_train)
+    
+        y_pred = mlp.predict(X_test)
+        mse = mean_squared_error(y_test, y_pred)
+    
+        return mlp, mse
+
+    sleep_model, sleep_mse = train_sleep_model()
+
+
+    
+    # 사용자 입력 받기
+    col1, col2 = st.columns(2)
+    with col1:
+        sleep_duration = st.slider("Sleep Duration (hours):", min_value=3.0, max_value=12.0, value=7.0)
+    with col2:
+        physical_activity = st.slider("Physical Activity Level (days/week):", min_value=0, max_value=7, value=3)
+
+    col3, col4 = st.columns(2)
+    with col3:
+        stress_level = st.slider("Stress Level (1-10):", min_value=1, max_value=10, value=5)
+    with col4:
+        heart_rate = st.slider("Resting Heart Rate (bpm):", min_value=40, max_value=120, value=70)
+
+    col5, col6 = st.columns(2)
+    with col5:
+        systolic_bp = st.slider("Systolic Blood Pressure (mmHg):", min_value=90, max_value=180, value=120)
+    with col6:
+        diastolic_bp = st.slider("Diastolic Blood Pressure (mmHg):", min_value=50, max_value=110, value=80)
+
+    daily_steps = st.slider("Daily Steps:", min_value=1000, max_value=20000, value=8000, step=500)
+
+    # 데이터 변환 및 예측
+    input_data = pd.DataFrame({
+        "Sleep Duration": [sleep_duration],
+        "Physical Activity Level": [physical_activity],
+        "Stress Level": [stress_level],
+        "Systolic_BP": [systolic_bp],
+        "Diastolic_BP": [diastolic_bp],
+        "Heart Rate": [heart_rate],
+        "Daily Steps": [daily_steps]
+    })
+
+
+    # 입력값 스케일링
+    input_data_scaled = sleep_scaler.transform(input_data)
+
+    # 예측 수행
+    predicted_quality = sleep_model.predict(input_data_scaled)[0]
+
+    # 결과 표시
+    st.markdown(f"<h3 style='color:#FF5733;'>Predicted Sleep Quality: {predicted_quality:.2f} / 5</h3>", unsafe_allow_html=True)
+
+    # 예측값에 따른 피드백 제공
+    if predicted_quality >= 4.5:
+        st.success("🌙 Your predicted sleep quality is excellent! Keep up the good habits!")
+    elif predicted_quality >= 3.5:
+        st.info("💤 Your sleep quality is good, but there's room for improvement!")
+    elif predicted_quality >= 2.5:
+        st.warning("😴 Your sleep quality is moderate. Try reducing stress and increasing activity!")
+    else:
+        st.error("⚠️ Your predicted sleep quality is low. Consider adjusting your sleep habits and lifestyle.")
+
+    # 예측 MSE
+    #st.write(f"**Model Performance (MSE):** {sleep_mse:.4f}")
+
+
+# Page 6: About Project
 elif page == "About Project":
     st.title("About Project")
     st.write("""
