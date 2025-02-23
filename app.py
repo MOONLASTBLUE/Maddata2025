@@ -36,12 +36,12 @@ if page == "Sleep Quality Prediction":
         
 # Page 1: Home & How to Use the App
 if page == "How to Use the App":
-    st.title("BadgerTrack")
+    st.title("College Life essentials")
     st.subheader("Transform Your Lifestyle with Smart Insights")
     st.image("image/First-Day-Students-Bascom-2023-09-06BR-0062-1600x1066.jpg", use_container_width=True)
 
     st.write("""
-        Welcome to **BadgerTrack**, your AI-powered health companion! 🦡✨  
+        Welcome to **College Life essentials**, your AI-powered health companion! 🦡✨  
         This app helps you gain **personalized health insights** by analyzing your **eating habits, physical activity**, and **sleep quality**.  
 
         **🚀 Key Features:**  
@@ -50,7 +50,7 @@ if page == "How to Use the App":
         - 📍 **Find Fitness Centers**: Locate nearby fitness centers to support your health journey.  
         - 📚 **Health Insights**: Learn about common health issues and ways to improve well-being.  
 
-        **🔍 How to Use BadgerTrack?**  
+        **🔍 How to Use College Life essentials?**  
         1️⃣ Select a feature from the left menu.  
         2️⃣ Enter your details & lifestyle habits.  
         3️⃣ Get **personalized predictions & insights** for a healthier lifestyle!  
