@@ -1,5 +1,8 @@
 # 🏥 Lifestyle-Based Health Prediction App
 
+## 🔗 Streamlit app link
+https://maddata2025-college-life-essentials.streamlit.app/
+
 ## 📌 Project Overview  
 This project is an **AI-powered simulator that predicts weight and health status based on user lifestyle data**.  
 We built a web interface using **Streamlit** and applied **machine learning models to predict BMI changes and sleep quality**.
