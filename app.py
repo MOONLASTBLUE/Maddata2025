@@ -36,20 +36,24 @@ if page == "Sleep Quality Prediction":
         
 # Page 1: Home & How to Use the App
 if page == "How to Use the App":
-    st.title("Welcome to the Health & Lifestyle Prediction App!")
+    st.title("BadgerTrack")
+    st.subheader("Transform Your Lifestyle with Smart Insights")
     st.image("image/First-Day-Students-Bascom-2023-09-06BR-0062-1600x1066.jpg", use_container_width=True)
 
     st.write("""
-        This app is designed to help you gain insights into your health by analyzing your **eating habits, physical activity**, and **sleep quality**.
-        You can use this app to predict your **obesity level** and **sleep quality** based on your lifestyle inputs.
-        
-        **Explore the following features:**
-        1. 🏃 **Obesity Prediction**: Analyze your BMI and predict obesity risk based on lifestyle habits.
-        2. 🌙 **Sleep Quality Prediction**: Understand how your lifestyle impacts your sleep quality.
-        3. 📍 **Find Fitness Centers**: Locate nearby fitness centers to support your health journey.
-        4. 📚 **Health Insights**: Learn about common health issues among young adults and how to prevent them.
+        Welcome to **BadgerTrack**, your AI-powered health companion! 🦡✨  
+        This app helps you gain **personalized health insights** by analyzing your **eating habits, physical activity**, and **sleep quality**.  
 
-        **Navigate using the left menu to get started!**
+        **🚀 Key Features:**  
+        - 🏃 **Obesity Prediction**: Analyze your BMI and predict obesity risk based on lifestyle habits.  
+        - 🌙 **Sleep Quality Prediction**: Understand how your lifestyle impacts your sleep quality.  
+        - 📍 **Find Fitness Centers**: Locate nearby fitness centers to support your health journey.  
+        - 📚 **Health Insights**: Learn about common health issues and ways to improve well-being.  
+
+        **🔍 How to Use BadgerTrack?**  
+        1️⃣ Select a feature from the left menu.  
+        2️⃣ Enter your details & lifestyle habits.  
+        3️⃣ Get **personalized predictions & insights** for a healthier lifestyle!  
     """)
     
 # Page 2:  Young Adults’ Health Challenges (10s-30s)
