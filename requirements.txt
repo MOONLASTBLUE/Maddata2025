@@ -5,4 +5,5 @@ matplotlib
 scikit-learn
 folium
 seaborn
+streamlit_folium
 
