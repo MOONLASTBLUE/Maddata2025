@@ -1,9 +1,0 @@
-streamlit
-pandas
-numpy
-matplotlib
-scikit-learn
-re
-folium
-folium_static
-seaborn
